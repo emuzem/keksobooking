@@ -8,6 +8,9 @@ body {
 
   color: #353535;
 }
+button {
+    outline: none;
+}
 
 h1 {
   color: #343434;
