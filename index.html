@@ -102,7 +102,7 @@
 
       <fieldset class="form__element form__element--wide" disabled>
         <label for="title">Заголовок объявления</label>
-        <input id="title" name="title" type="text" placeholder="Милая, уютная квартирка в центре Токио" required maxlength="100", minlength="30">
+        <input id="title" name="title" type="text" placeholder="Милая, уютная квартирка в центре Токио" required maxlength="100" minlength="30">
       </fieldset>
 
       <fieldset class="form__element form__element--wide">
@@ -152,10 +152,10 @@
       <fieldset class="form__element">
         <label for="capacity">Количество мест</label>
         <select id="capacity" name="capacity">
-          <option value="3" selected>для 3 гостей</option>
-          <option value="2">для 2 гостей</option>
+          <option value="0" selected>не для гостей</option>
           <option value="1">для 1 гостя</option>
-          <option value="0">не для гостей</option>
+          <option value="2">для 2 гостей</option>
+          <option value="3">для 3 гостей</option>
         </select>
       </fieldset>
 
@@ -246,5 +246,6 @@
 </template>
 
 <script src="js/map.js"></script>
+<script src="js/post.js"></script>
 </body>
 </html>

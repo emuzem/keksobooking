@@ -158,7 +158,7 @@ function generateFeaturesList (){
     }
     return array;
 }
-
+//
 function getRandomIntInclusive(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
