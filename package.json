@@ -1,0 +1,22 @@
+{
+  "name": "keksobooking",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emuzem/keksobooking.git"
+  },
+  "author": "emuzem",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/emuzem/keksobooking/issues"
+  },
+  "homepage": "https://github.com/emuzem/keksobooking#readme",
+  "devDependencies": {
+    "json-server": "^0.16.3"
+  }
+}

@@ -85,7 +85,7 @@
   <div class="notice">
     <h2 class="notice__title">Ваше объявление</h2>
 
-    <form class="notice__form notice__form--disabled" method="post" enctype="multipart/form-data" autocomplete="off">
+    <form class="notice__form notice__form--disabled">
       <fieldset class="notice__header">
         <legend>Ваша фотография (для карты)</legend>
         <div class="notice__photo">
@@ -93,7 +93,7 @@
             <div class="notice__preview">
               <img src="img/muffin.png" alt="Аватар пользователя"  width="40" height="44">
             </div>
-            <input type="file" id="avatar" required>
+            <input type="file" id="avatar">
             <label class="drop-zone" for="avatar">Загрузите или&nbsp;перетащите сюда фото</label>
             <p class="notice__info">Заполните все обязательные поля, назначьте цену, загрузите фотографии. Придумайте интересное описание. Оно сделает объявление более живым и привлекательным. Получившееся объявление должно давать гостям полное представление о вашем жилье.</p>
           </div>
@@ -107,7 +107,7 @@
 
       <fieldset class="form__element form__element--wide">
         <label for="address">Адрес</label>
-        <input id="address" name="address" type="text" placeholder="632, 207" disabled>
+        <input id="address" name="address" type="text" placeholder="632, 207" required>
       </fieldset>
 
       <fieldset class="form__element">
@@ -246,6 +246,7 @@
 </template>
 <script src="js/data.js"></script>
 <script src="js/map/mapMain.js"></script>
+<script src="js/form.js"></script>
 <script src="js/post.js"></script>
 </body>
 </html>

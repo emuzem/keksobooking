@@ -5,8 +5,8 @@ const map = document.querySelector('.map');
 const mapPinMain = document.querySelector('.map__pin--main');
 const inputAddress= document.getElementById('address');
 
-const offersList = [];
-renderOfferList(8);
+// const offersList = [];
+// renderOfferList(8);
 
 disableForms();
 function disableForms (){
@@ -14,20 +14,22 @@ function disableForms (){
         el.setAttribute('disabled', 'disabled');
     });
 }
-function ableForms (){
+function ableForms () {
     fieldset.forEach((el) => {
         el.removeAttribute('disabled');
     })
     noticeForm.classList.remove('notice__form--disabled');
     map.classList.remove('map--faded');
+    getResources('http://localhost:3000/offers')
+        .then(data => {
+            data.forEach(el => {
+                showPins(el.location.x, el.location.y, el.offer.title, el.offer.address, el.offer.price, el.offer.type, el.offer.rooms, el.offer.guests, el.offer.checkin, el.offer.checkout, el.offer.features, el.offer.description, el.author.avatar)
+            });
+        })
+        .catch();
 }
 
-document.addEventListener('click', (ev)=>{
-    console.log(ev.clientX);
-    console.log(ev.clientY);
-});
-mapPinMain.addEventListener('mousedown', (evDown) => {
-    console.log(evDown.clientY);
+mapPinMain.addEventListener('mousedown', () => {
     ableForms();
     let startCoords = {
         x:  mapPinMain.getBoundingClientRect().left + 30,
@@ -60,16 +62,15 @@ mapPinMain.addEventListener('mousedown', (evDown) => {
 
 const pins = document.querySelector('.map__pins');
 //отрисовка пинов
-function showPins() {
+function showPins(x, y, title, address, price, type, rooms, guests, checkin, checkout, features, description, avatar) {
     let pinFragment = document.createDocumentFragment();
-    for (let i = 0; i < 8; i++) {
-        pinFragment.append(fillTemplate(offersList[i], i));
-    }
+        pinFragment.append(fillTemplate(x, y, title, address, price, type, rooms, guests, checkin, checkout, features, description, avatar));
     pins.append(pinFragment);
 }
-function showPopup(i) {
+
+function showPopup(title, address, price, type, rooms, guests, checkin, checkout, features, description, avatar) {
     let popupFragment = document.createDocumentFragment();
-    popupFragment.append(fillPopup(offersList[i]));
+    popupFragment.append(fillPopup(title, address, price, type, rooms, guests, checkin, checkout, features, description, avatar));
     map.append(popupFragment);
     const popupClose = document.querySelector('.popup__close');
     const popup = document.querySelectorAll('.popup');
@@ -81,14 +82,14 @@ function showPopup(i) {
     }
     document.addEventListener('click', hidePopup);
 }
-function fillTemplate (obj, i){
+function fillTemplate (x, y, title, address, price, type, rooms, guests, checkin, checkout, features, description, avatar){
     let pinClone = document.querySelector("template").content.querySelector('.map__pin').cloneNode(true);
-    pinClone.querySelector('img').src = obj.author.avatar;
-    pinClone.style = `left: ${obj.location.x}px; top: ${obj.location.y}px;`;
-    pinClone.querySelector('img').alt = obj.offer.title;
+    pinClone.querySelector('img').src = `${avatar}`;
+    pinClone.style = `left: ${x}px; top: ${y}px;`;
+    pinClone.querySelector('img').alt = title;
 
     pinClone.addEventListener('click', ()=> {
-        showPopup(i);
+        showPopup(title, address, price, type, rooms, guests, checkin, checkout, features, description, avatar);
         document.removeEventListener('click', hidePopup);
     });
     return pinClone;
@@ -97,18 +98,17 @@ function fillTemplate (obj, i){
 //заполнение шаблона пина и отрисовка попапа при нажатии
 
 //заполнение информации внутри попапа
-function fillPopup (obj){
+function fillPopup (title, address, price, type, rooms, guests, checkin, checkout, features, description, avatar){
     let popupClone = document.querySelector('template').content.querySelector('.map__card').cloneNode(true);
-    popupClone.querySelector('.popup__title').textContent = obj.offer.title;
-    popupClone.querySelector('.popup__text--address').textContent = obj.offer.address;
-    popupClone.querySelector('.popup__text--price').textContent = `${obj.offer.price}₽/ночь`;
-    popupClone.querySelector('.popup__type').textContent = obj.offer.type;
-    popupClone.querySelector('.popup__text--capacity').textContent = `${obj.offer.rooms} комнаты для ${obj.offer.guests} гостей`;
-    popupClone.querySelector('.popup__text-time').textContent = `Заезд после ${obj.offer.checkin}, выезд до ${obj.offer.checkout}`;
-    showFeatures(obj.offer.features, popupClone);
-    popupClone.querySelector('.popup__description').textContent = obj.offer.description;
-    showPhotos(obj.offer.photos, popupClone);
-    popupClone.querySelector('.popup__avatar').src = obj.author.avatar;
+    popupClone.querySelector('.popup__title').textContent = title;
+    popupClone.querySelector('.popup__text--address').textContent = address;
+    popupClone.querySelector('.popup__text--price').textContent = `${price}₽/ночь`;
+    popupClone.querySelector('.popup__type').textContent = type;
+    popupClone.querySelector('.popup__text--capacity').textContent = `${rooms} комнаты для ${guests} гостей`;
+    popupClone.querySelector('.popup__text-time').textContent = `Заезд после ${checkin}, выезд до ${checkout}`;
+    showFeatures(features, popupClone);
+    popupClone.querySelector('.popup__description').textContent = description;
+    popupClone.querySelector('.popup__avatar').src = avatar;
     return popupClone;
 }
 function showFeatures (feature, popupClone){
@@ -120,12 +120,22 @@ function showFeatures (feature, popupClone){
         ul.appendChild(liElem);
     }
 }
-function showPhotos (pics, popupClone){
-    let ul = popupClone.querySelector('.popup__pictures');
-    for(let i = 0; i < pics.length; i++){
-        let photo = document.createElement('img');
-        photo.src = pics[i];
-        photo.style = 'width: 60px; height: 60px; padding: 2px;';
-        ul.appendChild(photo);
+// function showPhotos (pics, popupClone){
+//     let ul = popupClone.querySelector('.popup__pictures');
+//     for(let i = 0; i < pics.length; i++){
+//         let photo = document.createElement('img');
+//         photo.src = pics[i];
+//         photo.style = 'width: 60px; height: 60px; padding: 2px;';
+//         ul.appendChild(photo);
+//     }
+// }
+
+const getResources = async (url) => {
+    const result = await fetch(url);
+
+    if(!result.ok){
+        throw new Error(`Could not fetch ${url}, status: ${result.status}`);
     }
+
+    return await result.json();
 }
