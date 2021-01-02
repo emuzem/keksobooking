@@ -1,19 +1,19 @@
-
 const fieldset = document.querySelectorAll('fieldset');
 const noticeForm = document.querySelector('.notice__form');
 const map = document.querySelector('.map');
 const mapPinMain = document.querySelector('.map__pin--main');
 const inputAddress= document.getElementById('address');
+const mapFilters = document.querySelector('.map__filters');
 
 class Pin {
-    constructor(src, left, top, title, parentSelector, author, offer) {
-        this.src = src;
-        this.left = left;
-        this.top = top;
-        this.title = title;
-        this.parent = document.querySelector(parentSelector);
-        this.author = author;
-        this.offer = offer;
+    constructor(obj, parent) {
+        this.src = obj.author.avatar;
+        this.left = obj.location.x;
+        this.top = obj.location.y;
+        this.title = obj.offer.title;
+        this.parent = document.querySelector(parent);
+        this.author = obj.author;
+        this.offer = obj.offer;
     }
     render(){
         const element = document.createElement('div');
@@ -29,7 +29,7 @@ class Pin {
 }
 
 class Popup {
-    constructor(avatar, title, address, price, type, rooms, guests, checkin, checkout, features, description, parent) {
+    constructor(avatar, title, address, price, type, rooms, guests, checkin, checkout, features, description) {
         this.avatar = avatar;
         this.title = title;
         this.address = address;
@@ -41,7 +41,6 @@ class Popup {
         this.checkout = checkout;
         this.features = features;
         this.description = description;
-        this.parent = parent;
     }
 
     render(){
@@ -65,74 +64,12 @@ class Popup {
             if (ev.target === close){
                 document.querySelector('.map').removeChild(element);
             }
-        })
+        });
     }
 }
 
-
-mapPinMain.addEventListener('mousedown', () => {
-    ableForms();
-    let startCoords = {
-        x:  mapPinMain.getBoundingClientRect().left + 30,
-        y: mapPinMain.getBoundingClientRect().bottom + 12
-    };
-    console.log(map.getBoundingClientRect().left);
-    const onMouseMove = (evMove) => {
-        const shift = {
-            x: startCoords.x - evMove.clientX,
-            y: startCoords.y - evMove.clientY
-        };
-
-        startCoords = {
-            x: evMove.clientX,
-            y: evMove.clientY
-        };
-        mapPinMain.style.left = (mapPinMain.offsetLeft - shift.x) + 'px';
-        mapPinMain.style.top = (mapPinMain.offsetTop - shift.y) + 'px';
-    }
-    const onMouseUp = (evUp) => {
-        evUp.preventDefault();
-        inputAddress.value = `${Math.floor(startCoords.x)}, ${Math.floor(startCoords.y)}`;
-        //showPins();
-        map.removeEventListener('mousemove', onMouseMove);
-        document.removeEventListener('mouseup', onMouseUp);
-    };
-    map.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
-});
-
-disableForms();
-function disableForms (){
-    fieldset.forEach((el) => {
-        el.setAttribute('disabled', 'disabled');
-    });
-}
-
-function ableForms () {
-    fieldset.forEach((el) => {
-        el.removeAttribute('disabled');
-    })
-    noticeForm.classList.remove('notice__form--disabled');
-    map.classList.remove('map--faded');
-    getResources('http://localhost:3000/offers')
-        .then(data => {
-            data.forEach(({author, offer, location}) => {
-                new Pin(author.avatar, location.x, location.y, offer.title, '.map', author, offer).render();
-            });
-        })
-        .catch();
-}
-
-// const pins = document.querySelector('.map__pins');
-// //отрисовка пинов
-// function showPins(author, offer, location) {
-//     let pinFragment = document.createDocumentFragment();
-//         pinFragment.append(fillTemplate(author, offer, location));
-//     pins.append(pinFragment);
-// }
-//
 function showPopup(author, offer) {
-    new Popup(author.avatar, offer.title, offer.address, offer.price, offer.type, offer.rooms, offer.guests, offer.checkin, offer.checkout, offer.features, offer.description, '.map').render();
+    new Popup(author.avatar, offer.title, offer.address, offer.price, offer.type, offer.rooms, offer.guests, offer.checkin, offer.checkout, offer.features, offer.description).render();
     showFeatures(offer.features);
 }
 
@@ -146,6 +83,49 @@ function showFeatures(features) {
     }
 }
 
+disableForms();
+function disableForms (){
+    fieldset.forEach((el) => {
+        el.setAttribute('disabled', 'disabled');
+    });
+}
+
+const updateFilters = (data) => {
+    document.querySelector('.map__filters').addEventListener('change', ()=> {
+        document.querySelector('.map__pins-placing').innerHTML = ' ';
+        const type = document.querySelector('#housing-type');
+        let types = ['flat', 'house', 'bungalo'];
+
+            for (let i = 0; i < types.length; i++) {
+                if (type.value === types[i]) {
+                    window.filteredType = data.filter(el => {
+                        return el.offer.type === types[i];
+                    });
+                    window.filtered = window.filteredType;
+                 }
+            }
+
+        filtered.forEach(el => {
+            new Pin(el, '.map__pins-placing').render();
+        });
+    });
+    }
+
+function ableForms () {
+    fieldset.forEach((el) => {
+        el.removeAttribute('disabled');
+    })
+    noticeForm.classList.remove('notice__form--disabled');
+    map.classList.remove('map--faded');
+    getResources('http://localhost:3000/offers')
+        .then(data => {
+            updateFilters(data);
+            data.forEach(el => {
+                new Pin(el, '.map__pins-placing').render();
+            });
+        })
+        .catch();
+}
 
 const getResources = async (url) => {
     const result = await fetch(url);
