@@ -48,7 +48,7 @@ class Popup {
         const element = document.createElement('div');
         element.innerHTML = ` 
             <article class="map__card popup">
-    <img src="this.avatar" class="popup__avatar" width="70" height="70">
+    <img src="${this.avatar}" class="popup__avatar" width="70" height="70">
     <button class="popup__close">Закрыть</button>
     <h3 class="popup__title">${this.title}</h3>
     <p class="popup__text--address"><small>${this.address}</small></p>
@@ -56,22 +56,16 @@ class Popup {
     <h4 class="popup__type">${this.type}</h4>
     <p class="popup__text--capacity">${this.rooms} комнаты для ${this.guests} гостей</p>
     <p class="popup__text-time">Заезд после ${this.checkin}, выезд до ${this.checkout}</p>
-    <ul class="popup__features">
-    ${this.showFeatures(this.features, element)}        
-    </ul>
+    <ul class="popup__features"> </ul>
     <p class="popup__description">${this.description}</p>
   </article>`
         document.querySelector('.map').append(element);
-    }
-    showFeatures(features, parent) {
-        console.log(features);
-        console.log(parent);
-        for (let i = 0; i < features.length; i++) {
-            let liElem = document.createElement('li');
-            liElem.classList.add('feature');
-            liElem.classList.add(`feature--${features[i]}`);
-            parent.append(liElem);
-        }
+        const close = document.querySelector('.popup__close');
+        element.addEventListener('click', (ev) => {
+            if (ev.target === close){
+                document.querySelector('.map').removeChild(element);
+            }
+        })
     }
 }
 
@@ -139,16 +133,17 @@ function ableForms () {
 //
 function showPopup(author, offer) {
     new Popup(author.avatar, offer.title, offer.address, offer.price, offer.type, offer.rooms, offer.guests, offer.checkin, offer.checkout, offer.features, offer.description, '.map').render();
-    console.log(author.avatar);
-    const popupClose = document.querySelector('.popup__close');
-    const popup = document.querySelectorAll('.popup');
-    window.hidePopup = (ev) => {
-        if (ev.target === popupClose) {
-            popup.forEach(el => map.removeChild(el));
-            document.addEventListener('click', hidePopup);
-        }
+    showFeatures(offer.features);
+}
+
+function showFeatures(features) {
+    console.log(features);
+    for (let i = 0; i < features.length; i++) {
+        let liElem = document.createElement('li');
+        liElem.classList.add('feature');
+        liElem.classList.add(`feature--${features[i]}`);
+        document.querySelector('.popup__features').append(liElem);
     }
-    document.addEventListener('click', hidePopup);
 }
 
 
