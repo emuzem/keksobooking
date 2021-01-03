@@ -1,5 +1,4 @@
 mapPinMain.addEventListener('mousedown', () => {
-    ableForms();
     let startCoords = {
         x:  mapPinMain.getBoundingClientRect().left + 30,
         y: mapPinMain.getBoundingClientRect().bottom + 12

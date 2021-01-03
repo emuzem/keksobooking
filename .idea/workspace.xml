@@ -26,10 +26,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="220f898a-e074-4068-ad02-4e31cee8f457" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/js/map/drag&amp;drop.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/js/data.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/map/drag&amp;drop.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/map/drag&amp;drop.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/js/map/mapMain.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/map/mapMain.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -86,7 +85,7 @@
       <workItem from="1609331275642" duration="4643000" />
       <workItem from="1609348645065" duration="677000" />
       <workItem from="1609521963244" duration="9952000" />
-      <workItem from="1609593286463" duration="4278000" />
+      <workItem from="1609593286463" duration="20105000" />
     </task>
     <servers />
   </component>

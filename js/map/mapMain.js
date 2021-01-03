@@ -4,6 +4,9 @@ const map = document.querySelector('.map');
 const mapPinMain = document.querySelector('.map__pin--main');
 const inputAddress= document.getElementById('address');
 const mapFilters = document.querySelector('.map__filters');
+const popupElement = document.createElement('div');
+
+mapPinMain.addEventListener('mousedown', ableForms);
 
 class Pin {
     constructor(obj, parent) {
@@ -44,8 +47,7 @@ class Popup {
     }
 
     render(){
-        const element = document.createElement('div');
-        element.innerHTML = ` 
+        popupElement.innerHTML = ` 
             <article class="map__card popup">
     <img src="${this.avatar}" class="popup__avatar" width="70" height="70">
     <button class="popup__close">Закрыть</button>
@@ -55,14 +57,15 @@ class Popup {
     <h4 class="popup__type">${this.type}</h4>
     <p class="popup__text--capacity">${this.rooms} комнаты для ${this.guests} гостей</p>
     <p class="popup__text-time">Заезд после ${this.checkin}, выезд до ${this.checkout}</p>
-    <ul class="popup__features"> </ul>
+    <ul class="popup__features">
+     ${showFeatures(this.features)}</ul>
     <p class="popup__description">${this.description}</p>
   </article>`
-        document.querySelector('.map').append(element);
+        document.querySelector('.map').append(popupElement);
         const close = document.querySelector('.popup__close');
-        element.addEventListener('click', (ev) => {
+        popupElement.addEventListener('click', (ev) => {
             if (ev.target === close){
-                document.querySelector('.map').removeChild(element);
+                document.querySelector('.map').removeChild(popupElement);
             }
         });
     }
@@ -74,13 +77,14 @@ function showPopup(author, offer) {
 }
 
 function showFeatures(features) {
-    console.log(features);
-    for (let i = 0; i < features.length; i++) {
-        let liElem = document.createElement('li');
-        liElem.classList.add('feature');
-        liElem.classList.add(`feature--${features[i]}`);
-        document.querySelector('.popup__features').append(liElem);
-    }
+        const featuresList = document.createElement("ul");
+        features.forEach(el => {
+            const featureElement = document.createElement("li");
+            featureElement.classList.add("feature");
+            featureElement.classList.add(`feature--${el}`);
+            featuresList.append(featureElement);
+        });
+        return featuresList.innerHTML;
 }
 
 disableForms();
@@ -90,26 +94,79 @@ function disableForms (){
     });
 }
 
-const updateFilters = (data) => {
-    document.querySelector('.map__filters').addEventListener('change', ()=> {
-        document.querySelector('.map__pins-placing').innerHTML = ' ';
-        const type = document.querySelector('#housing-type');
-        let types = ['flat', 'house', 'bungalo'];
-
-            for (let i = 0; i < types.length; i++) {
-                if (type.value === types[i]) {
-                    window.filteredType = data.filter(el => {
-                        return el.offer.type === types[i];
-                    });
-                    window.filtered = window.filteredType;
+function filter(data) {
+        const houseTypeInput = document.querySelector('#housing-type');
+        let offerType = data.filter(el => {
+            if (houseTypeInput.value === 'any')
+            {return el;}
+                return el.offer.type === houseTypeInput.value;
+            });
+        const housingPrice = document.querySelector('#housing-price');
+        let offerPrice = data.filter(el => {
+             if (housingPrice.value === 'any'){
+                 return el;
+             }
+             else if (housingPrice.value === 'high'){
+                 return el.offer.price > 50000;
+             }
+             else if (housingPrice.value === 'middle'){
+                 if (el.offer.price > 10000 && el.offer.price < 50000) {
+                     return el;
                  }
-            }
-
-        filtered.forEach(el => {
-            new Pin(el, '.map__pins-placing').render();
+             }
+             else {
+                 return el.offer.price < 10000;
+             }
         });
+        const housingRooms = document.querySelector('#housing-rooms');
+        let offerRooms = data.filter(el => {
+            if (housingRooms.value === 'any') {
+                return el;
+            }
+            return el.offer.rooms === +housingRooms.value;
+        });
+
+        const housingGuests = document.querySelector('#housing-guests');
+        let offerGuests = data.filter(el => {
+            if (housingGuests.value === 'any') {
+                return el;
+            }
+            return el.offer.guests === +housingGuests.value;
+        });
+    const mapFeatures = mapFilters.elements.features;
+    let offerFeatures = [];
+    mapFeatures.forEach(el => {
+        if(el.checked){
+            offerFeatures.push(el.value);
+        }
     });
+    console.log(data[0].offer.features);
+    console.log(offerFeatures);
+    let dataFeaturesList = [];
+    data.forEach(el => {
+        for (let i = 0; i < offerFeatures.length; i++){
+            if(el.offer.features.includes(offerFeatures[i])){
+                dataFeaturesList.push(el);
+            }
+        }
+    });
+    console.log(dataFeaturesList);
+
+    let commonList = [];
+    for (let i = 0; i < offerType.length; i++){
+        if (offerPrice.includes(offerType[i]) && offerRooms.includes(offerType[i]) && offerGuests.includes(offerType[i]) && dataFeaturesList.includes(offerType[i])){
+            commonList.push(offerType[i]);
+        }
     }
+    updatePins(commonList);
+    }
+function updatePins (pins){
+    document.querySelector('.map__pins-placing').innerHTML = '';
+    pins.forEach(el => {
+        new Pin(el, '.map__pins-placing').render();
+    });
+
+}
 
 function ableForms () {
     fieldset.forEach((el) => {
@@ -119,7 +176,7 @@ function ableForms () {
     map.classList.remove('map--faded');
     getResources('http://localhost:3000/offers')
         .then(data => {
-            updateFilters(data);
+            window.mapPinData = data;
             data.forEach(el => {
                 new Pin(el, '.map__pins-placing').render();
             });
@@ -136,3 +193,8 @@ const getResources = async (url) => {
 
     return await result.json();
 }
+
+mapFilters.addEventListener('change', () => {
+    filter(window.mapPinData);
+    mapPinMain.removeEventListener('mousedown', ableForms);
+});
