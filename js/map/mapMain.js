@@ -61,7 +61,7 @@ class Popup {
     <ul class="popup__features">
      ${showFeatures(this.features)}</ul>
     <p class="popup__description">${this.description}</p>
-    <ul class="popup__pictures">${showPhotos(this.photos)}</ul>
+    <ul class="popup__pictures">${showPhotos(this.photos, 0)}</ul>
   </article>`
         document.querySelector('.map').append(popupElement);
         const close = document.querySelector('.popup__close');
@@ -74,9 +74,24 @@ class Popup {
 }
 
 function showPopup(author, offer) {
+    popupElement.classList.remove('hidden');
     new Popup(author.avatar, offer.title, offer.address, offer.price, offer.type, offer.rooms, offer.guests, offer.checkin, offer.checkout, offer.features, offer.description, offer.photos).render();
     showFeatures(offer.features);
+    let index = 0;
+    document.querySelector('.popup__pictures').addEventListener('click', ()=> {
+        index++;
+        if (index === offer.photos.length){
+            index = 0;
+        }
+        document.querySelector('.popup__pictures').innerHTML = `${showPhotos(offer.photos, index)}`;
+    });
+    document.addEventListener('keydown', (ev)=> {
+        if (ev.key === 'Escape'){
+            popupElement.classList.add('hidden');
+        }
+    })
 }
+
 
 function showFeatures(features) {
         const featuresList = document.createElement("ul");
@@ -88,13 +103,11 @@ function showFeatures(features) {
         });
         return featuresList.innerHTML;
 }
-function showPhotos (photos) {
+function showPhotos (photos, index) {
     const photosList = document.createElement("ul");
-    photos.forEach(el => {
         const photoElement = document.createElement("li");
-        photoElement.innerHTML = `<img width="100%"  style="display: inline-block;" src="${el}">`;
+        photoElement.innerHTML = `<img class="popup__picture" style="display: block;" src="${photos[index]}">`;
         photosList.append(photoElement);
-    });
     return photosList.innerHTML;
 }
 
@@ -103,86 +116,13 @@ function disableForms (){
     fieldset.forEach((el) => {
         el.setAttribute('disabled', 'disabled');
     });
-}
-
-function filter(data) {
-        const houseTypeInput = document.querySelector('#housing-type');
-        let offerType = data.filter(el => {
-            if (houseTypeInput.value === 'any')
-            {return el;}
-                return el.offer.type === houseTypeInput.value;
-            });
-        const housingPrice = document.querySelector('#housing-price');
-        let offerPrice = data.filter(el => {
-             if (housingPrice.value === 'any'){
-                 return el;
-             }
-             else if (housingPrice.value === 'high'){
-                 return el.offer.price > 50000;
-             }
-             /*if (housingPrice.value === 'middle'){
-                 if (el.offer.price > 10000 && el.offer.price < 50000) {
-                     let element = el;
-                     return element;
-                 }
-             }*/
-            else {
-                 return el.offer.price < 10000;
-             }
-        });
-        const housingRooms = document.querySelector('#housing-rooms');
-        let offerRooms = data.filter(el => {
-            if (housingRooms.value === 'any') {
-                return el;
-            }
-            return el.offer.rooms === +housingRooms.value;
-        });
-
-        const housingGuests = document.querySelector('#housing-guests');
-        let offerGuests = data.filter(el => {
-            if (housingGuests.value === 'any') {
-                return el;
-            }
-            return el.offer.guests === +housingGuests.value;
-        });
-    const mapFeatures = mapFilters.elements.features;
-    let offerFeatures = [];
-    mapFeatures.forEach(el => {
-        if(el.checked){
-            offerFeatures.push(el.value);
-        }
-    });
-    let dataFeaturesList = [];
-    data.forEach(el => {
-        for (let i = 0; i < offerFeatures.length; i++){
-            if(el.offer.features.includes(offerFeatures[i])){
-                dataFeaturesList.push(el);
-            }
-        }
-    });
-    if (dataFeaturesList[0] == null){
-        console.log('he;;p');
-        data.forEach((el, i) => {
-            dataFeaturesList[i] = el;
-        });
-    }
-    console.log(dataFeaturesList);
-    let commonList = [];
-    for (let i = 0; i < offerType.length; i++){
-        if (offerPrice.includes(offerType[i]) && offerRooms.includes(offerType[i]) && offerGuests.includes(offerType[i])){
-            if(dataFeaturesList.includes(offerType[i])) {
-                commonList.push(offerType[i]);
-            }
-        }
-    }
-    updatePins(commonList);
-    }
-function updatePins (pins){
+    noticeForm.classList.add('notice__form--disabled');
+    map.classList.add('map--faded');
     document.querySelector('.map__pins-placing').innerHTML = '';
-    pins.forEach(el => {
-        new Pin(el, '.map__pins-placing').render();
-    });
-
+    popupElement.classList.add('hidden');
+    document.querySelector('.map__pin--main').style = 'left: 50%; top: 375px;';
+    inputAddress.value = defaultStatus;
+    form.reset();
 }
 
 function ableForms () {
@@ -212,7 +152,9 @@ const getResources = async (url) => {
 }
 
 mapFilters.addEventListener('change', () => {
-    document.querySelector('.popup').style.display = 'none';
     filter(window.mapPinData);
     mapPinMain.removeEventListener('mousedown', ableForms);
+    document.querySelector('.popup').style.display = 'none';
 });
+
+document.querySelector('.form__reset').addEventListener('click', disableForms);

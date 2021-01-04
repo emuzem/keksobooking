@@ -19,7 +19,24 @@ function postData (form) {
             },
             body: JSON.stringify(obj)
         }).then(data => data.json()
-        ).then(json => {console.log(json); form.reset();}
-        ).catch(() => console.log('failure'));
+        ).then((resp) => {
+            form.reset();
+            disableForms();
+            document.querySelector('.success').classList.remove('hidden');
+            setTimeout(()=> {
+                document.querySelector('.success').classList.add('hidden')
+            }, 1500);
+        }
+        ).catch(() => {
+            showErrorMessage();
+        });
     });
+}
+
+function showErrorMessage (){
+    document.querySelector('.success').textContent = 'Произошла ошибка!';
+    document.querySelector('.success').classList.remove('hidden');
+    setTimeout(()=> {
+        document.querySelector('.success').classList.add('hidden')
+    }, 1500);
 }
