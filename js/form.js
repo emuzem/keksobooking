@@ -19,7 +19,7 @@ function postData (form) {
             },
             body: JSON.stringify(obj)
         }).then(data => data.json()
-        ).then((resp) => {
+        ).then(() => {
             form.reset();
             disableForms();
             document.querySelector('.success').classList.remove('hidden');

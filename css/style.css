@@ -8,9 +8,6 @@ body {
 
   color: #353535;
 }
-button {
-    outline: none;
-}
 
 h1 {
   color: #343434;
@@ -733,4 +730,7 @@ textarea:focus {
   font-family: Roboto, Arial, sans-serif;
 
   color: #353535;
+}
+input[type="checkbox"]:focus + label::before {
+  outline: rgb(59, 153, 252) auto 5px;
 }

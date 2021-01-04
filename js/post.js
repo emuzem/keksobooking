@@ -50,3 +50,4 @@ function disableCapacitySelect () {
         people[i].setAttribute('disabled', 'disabled');
     }
 }
+

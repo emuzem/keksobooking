@@ -587,6 +587,44 @@
       "capacity": "0",
       "description": "",
       "id": 22
+    },
+    {
+      "title": "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
+      "address": "629, 89",
+      "type": "flat",
+      "price": "1000",
+      "timein": "12:00",
+      "timeout": "12:00",
+      "rooms": "1",
+      "capacity": "0",
+      "description": "",
+      "id": 23
+    },
+    {
+      "title": "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
+      "address": "629, 293",
+      "type": "flat",
+      "price": "777777",
+      "timein": "12:00",
+      "timeout": "12:00",
+      "rooms": "1",
+      "capacity": "0",
+      "description": "",
+      "id": 24
+    }
+  ],
+  "userAvatars": [
+    {
+      "title": "",
+      "address": "629, 233",
+      "type": "flat",
+      "price": "",
+      "timein": "12:00",
+      "timeout": "12:00",
+      "rooms": "1",
+      "capacity": "0",
+      "description": "",
+      "id": 1
     }
   ]
 }

@@ -28,6 +28,12 @@ class Pin {
         element.addEventListener('click', ()=> {
             showPopup(this.author, this.offer);
         });
+        element.addEventListener('keypress', (ev)=> {
+            if(ev.code === 'Enter'){
+                showPopup(this.author, this.offer);
+                document.querySelector('.popup__close').focus();
+            }
+        })
     }
 }
 
@@ -89,7 +95,13 @@ function showPopup(author, offer) {
         if (ev.key === 'Escape'){
             popupElement.classList.add('hidden');
         }
-    })
+    });
+    document.querySelector('.popup__close').addEventListener('keypress', (ev)=>{
+        if (ev.key === 'Enter'){
+            popupElement.classList.add('hidden');
+            document.querySelector('.map__pin').focus();
+        }
+    });
 }
 
 
@@ -150,9 +162,14 @@ const getResources = async (url) => {
 
     return await result.json();
 }
-
+let lastTimeout;
 mapFilters.addEventListener('change', () => {
-    filter(window.mapPinData);
+    if(lastTimeout){
+        window.clearTimeout(lastTimeout);
+    }
+    lastTimeout = window.setTimeout(function (){
+        filter(window.mapPinData);
+    }, 500);
     mapPinMain.removeEventListener('mousedown', ableForms);
     document.querySelector('.popup').style.display = 'none';
 });
