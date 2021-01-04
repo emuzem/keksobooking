@@ -3,7 +3,6 @@ mapPinMain.addEventListener('mousedown', () => {
         x:  mapPinMain.getBoundingClientRect().left + 30,
         y: mapPinMain.getBoundingClientRect().bottom + 12
     };
-    console.log(map.getBoundingClientRect().left);
     const onMouseMove = (evMove) => {
         const shift = {
             x: startCoords.x - evMove.clientX,

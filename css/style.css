@@ -340,6 +340,8 @@ textarea:focus {
 
 .map__card {
   width: 230px;
+  max-height: 500px;
+  overflow-y: auto;
 
   position: absolute;
   left: 20px;

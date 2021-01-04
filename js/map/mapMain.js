@@ -32,7 +32,7 @@ class Pin {
 }
 
 class Popup {
-    constructor(avatar, title, address, price, type, rooms, guests, checkin, checkout, features, description) {
+    constructor(avatar, title, address, price, type, rooms, guests, checkin, checkout, features, description, photos) {
         this.avatar = avatar;
         this.title = title;
         this.address = address;
@@ -44,6 +44,7 @@ class Popup {
         this.checkout = checkout;
         this.features = features;
         this.description = description;
+        this.photos = photos;
     }
 
     render(){
@@ -60,19 +61,20 @@ class Popup {
     <ul class="popup__features">
      ${showFeatures(this.features)}</ul>
     <p class="popup__description">${this.description}</p>
+    <ul class="popup__pictures">${showPhotos(this.photos)}</ul>
   </article>`
         document.querySelector('.map').append(popupElement);
         const close = document.querySelector('.popup__close');
         popupElement.addEventListener('click', (ev) => {
             if (ev.target === close){
-                document.querySelector('.map').removeChild(popupElement);
+                document.querySelector('.map__wrapper').removeChild(popupElement);
             }
         });
     }
 }
 
 function showPopup(author, offer) {
-    new Popup(author.avatar, offer.title, offer.address, offer.price, offer.type, offer.rooms, offer.guests, offer.checkin, offer.checkout, offer.features, offer.description).render();
+    new Popup(author.avatar, offer.title, offer.address, offer.price, offer.type, offer.rooms, offer.guests, offer.checkin, offer.checkout, offer.features, offer.description, offer.photos).render();
     showFeatures(offer.features);
 }
 
@@ -85,6 +87,15 @@ function showFeatures(features) {
             featuresList.append(featureElement);
         });
         return featuresList.innerHTML;
+}
+function showPhotos (photos) {
+    const photosList = document.createElement("ul");
+    photos.forEach(el => {
+        const photoElement = document.createElement("li");
+        photoElement.innerHTML = `<img width="100%"  style="display: inline-block;" src="${el}">`;
+        photosList.append(photoElement);
+    });
+    return photosList.innerHTML;
 }
 
 disableForms();
@@ -109,12 +120,13 @@ function filter(data) {
              else if (housingPrice.value === 'high'){
                  return el.offer.price > 50000;
              }
-             else if (housingPrice.value === 'middle'){
+             /*if (housingPrice.value === 'middle'){
                  if (el.offer.price > 10000 && el.offer.price < 50000) {
-                     return el;
+                     let element = el;
+                     return element;
                  }
-             }
-             else {
+             }*/
+            else {
                  return el.offer.price < 10000;
              }
         });
@@ -140,8 +152,6 @@ function filter(data) {
             offerFeatures.push(el.value);
         }
     });
-    console.log(data[0].offer.features);
-    console.log(offerFeatures);
     let dataFeaturesList = [];
     data.forEach(el => {
         for (let i = 0; i < offerFeatures.length; i++){
@@ -150,12 +160,19 @@ function filter(data) {
             }
         }
     });
+    if (dataFeaturesList[0] == null){
+        console.log('he;;p');
+        data.forEach((el, i) => {
+            dataFeaturesList[i] = el;
+        });
+    }
     console.log(dataFeaturesList);
-
     let commonList = [];
     for (let i = 0; i < offerType.length; i++){
-        if (offerPrice.includes(offerType[i]) && offerRooms.includes(offerType[i]) && offerGuests.includes(offerType[i]) && dataFeaturesList.includes(offerType[i])){
-            commonList.push(offerType[i]);
+        if (offerPrice.includes(offerType[i]) && offerRooms.includes(offerType[i]) && offerGuests.includes(offerType[i])){
+            if(dataFeaturesList.includes(offerType[i])) {
+                commonList.push(offerType[i]);
+            }
         }
     }
     updatePins(commonList);
@@ -195,6 +212,7 @@ const getResources = async (url) => {
 }
 
 mapFilters.addEventListener('change', () => {
+    document.querySelector('.popup').style.display = 'none';
     filter(window.mapPinData);
     mapPinMain.removeEventListener('mousedown', ableForms);
 });
